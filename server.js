@@ -17,12 +17,12 @@ mongoose.Promise = Promise;
 mongoose
   .connect(config.database)
   .then( result => {
-    console.log("Connected to database" ${result.connections[0].name}" on ${result.connections[0].host}:${result.connections[0].port}")
+    console.log(`Connected to database '${result.connections[0].name}' on ${result.connections[0].host}:${result.connections[0].port}`)
   })
   .catch(err => console.log("Your connection has an error:", err));
 
 //this adds a favicon 
-app.use(favicon(path.join(__dirname, "public", "assets/img/favicon.ico")))
+app.use(favicon(path.join(__dirname, "public", "assets/images/favicon.ico")))
 
 //this sets up Morgan
 app.use(logger("dev"));
@@ -55,5 +55,5 @@ app.use("/scrape", scrape);
 //this is for starting my server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
-  console.log(`Listening on http://localhost:${PORT}`)
+  console.log("The app is listening on http://localhost:${PORT}")
 });
