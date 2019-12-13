@@ -17,9 +17,9 @@ mongoose.Promise = Promise;
 mongoose
   .connect(config.database)
   .then( result => {
-    console.log("Connected to database "${result.connections[0].name}" on ${result.connections[0].host}:${result.connections[0].port}`)
+    console.log("Connected to database" ${result.connections[0].name}" on ${result.connections[0].host}:${result.connections[0].port}")
   })
-  .catch(err => console.log("Your connecation has an error:", err));
+  .catch(err => console.log("Your connection has an error:", err));
 
 //this adds a favicon 
 app.use(favicon(path.join(__dirname, "public", "assets/img/favicon.ico")))
