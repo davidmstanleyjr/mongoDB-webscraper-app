@@ -55,5 +55,5 @@ app.use("/scrape", scrape);
 //this is for starting my server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
-  console.log("The app is listening on http://localhost:${PORT}")
+  console.log(`The app is listening on http://localhost:${PORT}`)
 });

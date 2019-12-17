@@ -2,19 +2,20 @@ const express = require("express");
 const rp = require("request-promise");
 const cheerio = require ("cheerio");
 const db = require("../models");
-const router = express.router();
+const router = express.Router();
 
 
 
 //this is the route to scrape new articles
 router.get("/newArticles", function(req, res) {
-    //configuring options object for request-promist
     const options = {
-      uri: "https://www.ign.com",
+      uri: "https://www.ign.com/",
       transform: function (body) {
           return cheerio.load(body);
       }
     };
+
+    console.log(options)
    
    
     //this calls the database to return all of the saved articles
@@ -22,7 +23,7 @@ router.get("/newArticles", function(req, res) {
       .find({})
       .then((savedArticles) => {
         let savedHeadlines = savedArticles.map(article => article.headline)
-  
+        console.log(savedArticles)
           //this calls the request promise with the options object
           rp(options)
           .then(function ($) {
@@ -47,13 +48,13 @@ router.get("/newArticles", function(req, res) {
                 }
               }
             });
-  
+  console.log(newArticleArr, "=============================");
             //this adds all new articles to the database
             db.Article
               .create(newArticleArr)
                 //this returns count of new articles to the front end
               .then(result => res.json({count: newArticleArr.length}))
-              .catch(err => {});
+              .catch(err => console.log(err));
           })
           .catch(err => console.log(err))
       })
