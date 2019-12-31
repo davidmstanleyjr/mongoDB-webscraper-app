@@ -12,21 +12,14 @@
 {{#each articles}}
   {{#unless saved}}
     <figure class="storyPanel clearfix">
-      <a href="{{storyUrl}}" class="pull-right" target="_blank">
-        <div class="imgBox">
-          <img src="{{imgUrl}}" alt="" class="storyImg" height="150">
-        </div>
-      </a>
-      {{#if storyUrl}}
-        <a href="{{storyUrl}}" class="storyLink" target="_blank">
-          <h2 class="storyHeadline">{{headline}}</h2>
+
+
+        <a href={{storyUrl}} class="storyLink" target="_blank">
+          <h2 class="storyHeadline">{{this.headline}}</h2>
         </a>
-      {{else}}
-        <h3 class="storyHeadline">{{headline}}</h3>
-      {{/if}}
-      <h5 class="storyByline">{{byLine}}</h5>
-      <h6 class="storySummary">{{summary}}</h6>
-      <button class="storyButton" id="saveArticle" data-id="{{_id}}">Save Article</button>
+
+        <button class="saveArticle" data-id={{this._id}}>Save</button>
+
     </figure>
   {{/unless}}
 {{/each}}

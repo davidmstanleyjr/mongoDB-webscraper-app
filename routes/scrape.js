@@ -1,64 +1,44 @@
 const express = require("express");
-const rp = require("request-promise");
-const cheerio = require ("cheerio");
+const cheerio = require("cheerio");
 const db = require("../models");
 const router = express.Router();
-
-
+const axios = require("axios");
 
 //this is the route to scrape new articles
 router.get("/newArticles", function(req, res) {
-    const options = {
-      uri: "https://www.ign.com/",
-      transform: function (body) {
-          return cheerio.load(body);
-      }
-    };
+	const options = {
+		url: "https://www.ign.com/",
+		transform: function(body) {
+			return cheerio.load(body);
+		}
+	};
+	axios
+		.get(options.url)
+		.then((response) => {
+			const $ = cheerio.load(response.data);
+			$(".deck-items article").each(function(i, element) {
+				const link = "https://www.ign.com" + $(this).find("a").attr("href");
+				const headLine = $(this).find(".title-block h3.title").text();
+				const summary = $(this).find(".article-sub-headline").text;
+				const imgURL = $(this).find(".image-container").attr("src");
+				const byLine = $(this).find(".author-link").text();
+				// Create a new Article using the `result` object built from scraping
+				db.Article
+					.create({
+						headline: headLine,
+						storyUrl: link
+					})
+					.then(function(dbArticle) {
+						// View the added result in the console
+						console.log(dbArticle);
+					})
+					.catch(function(err) {
+						// If an error occurred, log it
+						console.log(err);
+					});
+			});
+		})
+		.catch((error) => console.log(error));
+});
 
-    console.log(options)
-   
-   
-    //this calls the database to return all of the saved articles
-    db.Article
-      .find({})
-      .then((savedArticles) => {
-        let savedHeadlines = savedArticles.map(article => article.headline)
-        console.log(savedArticles)
-          //this calls the request promise with the options object
-          rp(options)
-          .then(function ($) {
-            let newArticleArr = [];
-           
-            //this iterates over returned articles, and creates a newArticle object from the data
-            $("#latest-panel article.story.theme-summary").each((i, element) => {
-              let newArticle = new db.Article({
-                storyUrl: $(element).find(".story-body>.story-link").attr("href"),
-                headline: $(element).find("h2.headline").text().trim(),
-                summary : $(element).find("p.summary").text().trim(),
-                imgUrl  : $(element).find("img").attr("src"),
-                byLine  : $(element).find("p.byline").text().trim()
-              });
-             
-             
-              //this checks to make sure newArticle contains a storyUrl
-              if (newArticle.storyUrl) {
-                //this checks if new article matches any saved article, if not, this adds it to the array of new articles
-                if (!savedHeadlines.includes(newArticle.headline)) {
-                  newArticleArr.push(newArticle);
-                }
-              }
-            });
-  console.log(newArticleArr, "=============================");
-            //this adds all new articles to the database
-            db.Article
-              .create(newArticleArr)
-                //this returns count of new articles to the front end
-              .then(result => res.json({count: newArticleArr.length}))
-              .catch(err => console.log(err));
-          })
-          .catch(err => console.log(err))
-      })
-      .catch(err => console.log(err))
-  });
-  
-  module.exports = router;
+module.exports = router;
