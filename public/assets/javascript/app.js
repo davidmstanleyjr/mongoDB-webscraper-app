@@ -1,5 +1,3 @@
-const db = require("../../../models");
-
 $(document).ready(function() {
 	//this function posts a note to the server
 	function sendNote(element) {
